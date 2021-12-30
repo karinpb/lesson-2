@@ -2,6 +2,7 @@ import React from 'react';
 
 import HomePage from './pages/homepage/homepage.component';
 import ShopPage from './pages/shop/shop.component';
+import Header from './components/header/header.component';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
 
@@ -17,9 +18,10 @@ class App extends React.Component {
       //   <HomePage />
       // </div>
       <div>
-        <Routes>        
-          <Route excact path="/" element={<HomePage/>} />
-          <Route path="/shop" element={<ShopPage/>} />
+        <Header />
+        <Routes>
+          <Route excact path="/" element={<HomePage />} />
+          <Route path="/shop" element={<ShopPage />} />
         </Routes>
 
       </div>
