@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import HomePage from './pages/homepage/homepage.component';
 import ShopPage from './pages/shop/shop.component';
@@ -8,6 +9,7 @@ import { Route, Routes } from 'react-router-dom';
 import { getAuth } from "firebase/auth";
 import { createUserProfileDocument, db } from "./firebase/firebase.utils";
 import { doc, onSnapshot } from "firebase/firestore";
+import { setCurrentUser } from './redux/user/user.actions';
 import './App.css';
 
 const HatsPage = () => (
@@ -16,12 +18,16 @@ const HatsPage = () => (
   </div>
 )
 class App extends React.Component {
-  constructor() {
-    super();
-    this.state = { currentUser: null }
-  }
+  // Redux connect replaces this
+  // constructor() {
+  //   super();
+  //   this.state = { currentUser: null }
+  // }
 
   componentDidMount() {
+
+    const { setCurrentUser } = this.props;
+
     const auth = getAuth();
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
@@ -29,21 +35,28 @@ class App extends React.Component {
         const userRef = await createUserProfileDocument(userAuth);
         this.unsubSnapshot = onSnapshot(doc(db, "users", userAuth.uid), (doc) => {
           const data = doc.data();
+          console.log(data);
           if (!data) {
             console.log("There is no data", doc);
             return;
           }
-          console.log("Current data: ", data);
-          this.setState({
-            currentUser: {
-              id: data.id,
-              ...data
-            }
-          }, () => console.log("State: " + this.state))
+          setCurrentUser({
+            id: userAuth.uid,
+            ...data
+          });
+
+          // Old fashion way handling state
+          // this.setState({
+          //   currentUser: {
+          //     id: data.id,
+          //     ...data
+          //   }
+          // }, () => console.log("State: " + this.state))
         });
 
       } else {
-        this.setState({ currentUser: null });
+        // this.setState({ currentUser: null });
+        setCurrentUser({ setCurrentUser: userAuth });
       }
     });
   }
@@ -61,7 +74,7 @@ class App extends React.Component {
       //   <HomePage />
       // </div>
       <div>
-        <Header currentUser={this.state.currentUser} />
+        <Header />
         <Routes>
           <Route excact path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
@@ -73,4 +86,8 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = dispatch => ({
+  setCurrentUser: user => dispatch(setCurrentUser(user))
+});
+
+export default connect(null, mapDispatchToProps)(App);
