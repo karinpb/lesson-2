@@ -1,5 +1,5 @@
 const INITIAL_STATE = {
-    curentUser: null
+    currentUser: null
 }
 
 // Default es6 syntax for default value, null is a value, undefined is not which will use initial state
