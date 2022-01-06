@@ -25,25 +25,16 @@ class App extends React.Component {
     const auth = getAuth();
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
       if (userAuth) {
-        console.log("UserAuth",userAuth);
+        console.log("UserAuth", userAuth);
         const userRef = await createUserProfileDocument(userAuth);
-        // userRef.onSnapShot(snapShot => {
-        //   this.setState({
-        //     currentUser: {
-        //       id: snapShot.id,
-        //       ...snapShot.data()
-        //     }
-        //   }, () => console.log("State: " + this.state))
-        // });
-
         this.unsubSnapshot = onSnapshot(doc(db, "users", userAuth.uid), (doc) => {
-          const data=doc.data();
-          if(!data){
+          const data = doc.data();
+          if (!data) {
             console.log("There is no data", doc);
             return;
           }
           console.log("Current data: ", data);
-               this.setState({
+          this.setState({
             currentUser: {
               id: data.id,
               ...data
